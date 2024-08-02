@@ -5,15 +5,25 @@ const width = window.innerWidth;
 const height = window.innerHeight;
 
 class Sphere extends THREE.Mesh{
-    constructor(radius , color = "#00ff00"){
+    constructor({x , y , z} , radius , color = "#00ff00"){
         super(
             new THREE.SphereGeometry(radius , 32 , 32),
             new THREE.MeshStandardMaterial({color})
         );
         this.radius = radius;
+        
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        this.position.set(x , y , z)
 
         this.top = this.position.y + this.radius;
         this.bottom = this.position.y - this.radius;
+        this.right = this.position.x + this.radius;
+        this.left = this.position.x - this.radius;
+        this.front = this.position.z + this.radius;
+        this.back = this.position.z - this.radius;
     }
 }
 
@@ -34,9 +44,16 @@ const controls = new OrbitControls(camera , renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.03;
 
-const player = new Sphere(1 , 0x00ff00);
-player.castShadow = true;
-scene.add(player);
+let parts = [
+    new Sphere({x : 0 , y : 0 , z : 0} , 1 , 0x00ff00) ,
+    new Sphere({x : 2 , y : 0 , z : 0} , 1 , 0x00ff00) ,
+    new Sphere({x : 4 , y : 0 , z : 0} , 1 , 0x00ff00)
+];
+
+parts.forEach((part) => {
+    part.castShadow = true;
+    scene.add(part);
+});
 
 const groundMesh = new THREE.Mesh(
     new THREE.BoxGeometry(30 , 1 , 30),

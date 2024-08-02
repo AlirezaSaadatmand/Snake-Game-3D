@@ -4,7 +4,7 @@ import { OrbitControls } from "jsm/controls/OrbitControls.js";
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-let foodLst = [];
+var food = { x: null, z: null, foodsphere: null };
 class Sphere extends THREE.Mesh {
   constructor({ x, y, z }, radius, color = "#00ff00") {
     super(
@@ -44,9 +44,11 @@ class Snake {
     this.unit = 2;
   }
 
-  move() {
-    scene.remove(this.parts[0]);
-    this.parts.shift();
+  move(state) {
+    if (!state) {
+      scene.remove(this.parts[0]);
+      this.parts.shift();
+    }
 
     this.head = this.parts[this.parts.length - 1];
     if (this.up) {
@@ -74,7 +76,7 @@ class Snake {
       );
     }
     this.parts.push(sphere);
-    // sphere.castShadow = true;
+    sphere.castShadow = true;
     scene.add(sphere);
   }
 }
@@ -143,25 +145,36 @@ addEventListener("keydown", (event) => {
     snake.right = true;
   }
 });
-function createFood(){
-    let x = Math.floor((Math.random() - 0.5) * 25) * 2;
-    let z = Math.floor((Math.random() - 0.5) * 25) * 2;
-    snake.parts.forEach((part) => {
-        if(part.x == x && part.z == z){
-            createFood();
-        }
-    });
 
-    let food = new Sphere({ x : x , y : 0 , z : z} , 1 , 0xff0000);
-    scene.add(food);
-    foodLst.push(food);
+function createFood() {
+  let x = Math.floor((Math.random() - 0.5) * 25) * 2;
+  let z = Math.floor((Math.random() - 0.5) * 25) * 2;
+  snake.parts.forEach((part) => {
+    if (part.x == x && part.z == z) {
+      createFood();
+    }
+  });
+  var foodsphere = new Sphere({ x: x, y: 0, z: z }, 1, 0xff0000);
+  scene.add(foodsphere);
+  food.x = x;
+  food.z = z;
+  food.foodsphere = foodsphere;
 }
-createFood()
+createFood();
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
+  let head = snake.parts[snake.parts.length - 1];
+//   camera.position.set(head.x , head.y + 2 , head.z)
   if (counter % 8 == 0) {
-    snake.move();
+    if (head.x == food.x && head.z == food.z) {
+
+      scene.remove(food.foodsphere);
+      snake.move(true);
+      createFood();
+    } else {
+      snake.move(false);
+    }
   }
   counter++;
 }

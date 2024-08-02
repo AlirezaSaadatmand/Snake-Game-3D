@@ -3,6 +3,8 @@ import { OrbitControls } from "jsm/controls/OrbitControls.js";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
+
+let foodLst = [];
 class Sphere extends THREE.Mesh {
   constructor({ x, y, z }, radius, color = "#00ff00") {
     super(
@@ -88,7 +90,7 @@ const scene = new THREE.Scene();
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, width / height, 0.01, 1000);
-camera.position.set(6, 30, 20);
+camera.position.set(5, 35, 22);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -102,7 +104,7 @@ snake.parts.forEach((part) => {
 });
 
 const groundMesh = new THREE.Mesh(
-  new THREE.BoxGeometry(42, 1, 42),
+  new THREE.BoxGeometry(50, 1, 50),
   new THREE.MeshStandardMaterial({ color: 0xffffff })
 );
 groundMesh.receiveShadow = true;
@@ -141,11 +143,24 @@ addEventListener("keydown", (event) => {
     snake.right = true;
   }
 });
+function createFood(){
+    let x = Math.floor((Math.random() - 0.5) * 25) * 2;
+    let z = Math.floor((Math.random() - 0.5) * 25) * 2;
+    snake.parts.forEach((part) => {
+        if(part.x == x && part.z == z){
+            createFood();
+        }
+    });
 
+    let food = new Sphere({ x : x , y : 0 , z : z} , 1 , 0xff0000);
+    scene.add(food);
+    foodLst.push(food);
+}
+createFood()
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
-  if (counter % 10 == 0) {
+  if (counter % 8 == 0) {
     snake.move();
   }
   counter++;

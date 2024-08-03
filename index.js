@@ -1,10 +1,46 @@
 import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
+import { MeshStandardMaterial } from "three";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
 
 var food = { x: null, z: null, foodsphere: null };
+
+// Renerer
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(width, height);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+// Scene
+const scene = new THREE.Scene();
+
+// Camera
+const camera = new THREE.PerspectiveCamera(45, width / height, 0.01, 1000);
+camera.position.set(10, 50, 45);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.03;
+
+const groundMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(50, 1, 50),
+  new THREE.MeshStandardMaterial({ color: 0xffffff })
+);
+groundMesh.receiveShadow = true;
+groundMesh.position.y = -1.5;
+scene.add(groundMesh);
+
+// Light
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(0, 5, 0);
+light.castShadow = true;
+scene.add(light);
+
+const light2 = new THREE.HemisphereLight(0xffffff, 0x000000, 1);
+scene.add(light2);
+
 class Sphere extends THREE.Mesh {
   constructor({ x, y, z }, radius, color = "#00ff00") {
     super(
@@ -81,23 +117,6 @@ class Snake {
   }
 }
 
-// Renerer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(width, height);
-renderer.shadowMap.enabled = true;
-document.body.appendChild(renderer.domElement);
-
-// Scene
-const scene = new THREE.Scene();
-
-// Camera
-const camera = new THREE.PerspectiveCamera(45, width / height, 0.01, 1000);
-camera.position.set(10, 50, 45);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.03;
-
 const snake = new Snake();
 
 snake.parts.forEach((part) => {
@@ -105,22 +124,30 @@ snake.parts.forEach((part) => {
   scene.add(part);
 });
 
-const groundMesh = new THREE.Mesh(
-  new THREE.BoxGeometry(50, 1, 50),
-  new THREE.MeshStandardMaterial({ color: 0xffffff })
-);
-groundMesh.receiveShadow = true;
-groundMesh.position.y = -1.5;
-scene.add(groundMesh);
+function createStars(){
+    for(let i = 0; i < 2000; i++){
+        let x = Math.floor((Math.random()-0.5) * 500) + 200;
+        if (x - 200 < 0){
+            x -= 400;
+        }
+        let y = Math.floor((Math.random()-0.5) * 500) + 200;
+        if (y - 200 < 0){
+            y -= 400;
+        }
+        let z = Math.floor((Math.random()-0.5) * 500) + 200;
+        if (z - 200 < 0){
+            z -= 400;
+        }
 
-// Light
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(0, 5, 0);
-light.castShadow = true;
-scene.add(light);
-
-const light2 = new THREE.HemisphereLight(0xffffff, 0x000000, 1);
-scene.add(light2);
+        let starMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(Math.floor(Math.random()*2), 32, 32),
+            new MeshStandardMaterial({color:0xffffff})
+        )
+        starMesh.position.set(x,y,z);
+        scene.add(starMesh);
+    }
+}
+createStars()
 
 let counter = 0;
 

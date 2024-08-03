@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
-import { MeshStandardMaterial } from "three";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -92,24 +91,28 @@ class Snake {
         { x: this.head.x, y: this.head.y, z: this.head.z - this.unit },
         1
       );
+      camera.position.z -= this.unit;
     }
     if (this.down) {
       var sphere = new Sphere(
         { x: this.head.x, y: this.head.y, z: this.head.z + this.unit },
         1
       );
+      camera.position.z += this.unit;
     }
     if (this.right) {
       var sphere = new Sphere(
         { x: this.head.x + this.unit, y: this.head.y, z: this.head.z },
         1
       );
+      camera.position.x += this.unit;
     }
     if (this.left) {
       var sphere = new Sphere(
         { x: this.head.x - this.unit, y: this.head.y, z: this.head.z },
         1
       );
+      camera.position.x -= this.unit;
     }
     this.parts.push(sphere);
     sphere.castShadow = true;
@@ -144,7 +147,7 @@ function createStars(){
         }
         let starMesh = new THREE.Mesh(
             new THREE.SphereGeometry(Math.floor(Math.random()*2), 32, 32),
-            new MeshStandardMaterial({color:0xffffff})
+            new THREE.MeshStandardMaterial({color:0xffffff})
         )
         starMesh.position.set(x,y,z);
         scene.add(starMesh);

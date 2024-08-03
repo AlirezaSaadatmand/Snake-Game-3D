@@ -91,8 +91,8 @@ document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 
 // Camera
-const camera = new THREE.PerspectiveCamera(75, width / height, 0.01, 1000);
-camera.position.set(5, 35, 22);
+const camera = new THREE.PerspectiveCamera(45, width / height, 0.01, 1000);
+camera.position.set(10, 50, 45);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -165,8 +165,7 @@ function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   let head = snake.parts[snake.parts.length - 1];
-//   camera.position.set(head.x , head.y + 2 , head.z)
-  if (counter % 8 == 0) {
+  if (counter % 5 == 0) {
     if (head.x == food.x && head.z == food.z) {
 
       scene.remove(food.foodsphere);

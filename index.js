@@ -91,28 +91,24 @@ class Snake {
         { x: this.head.x, y: this.head.y, z: this.head.z - this.unit },
         1
       );
-      camera.position.z -= this.unit;
     }
     if (this.down) {
       var sphere = new Sphere(
         { x: this.head.x, y: this.head.y, z: this.head.z + this.unit },
         1
       );
-      camera.position.z += this.unit;
     }
     if (this.right) {
       var sphere = new Sphere(
         { x: this.head.x + this.unit, y: this.head.y, z: this.head.z },
         1
       );
-      camera.position.x += this.unit;
     }
     if (this.left) {
       var sphere = new Sphere(
         { x: this.head.x - this.unit, y: this.head.y, z: this.head.z },
         1
       );
-      camera.position.x -= this.unit;
     }
     this.parts.push(sphere);
     sphere.castShadow = true;
@@ -198,12 +194,20 @@ function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   let head = snake.parts[snake.parts.length - 1];
+  if (snake.up){
+    camera.position.z -= 1 / 5;
+  }else if( snake.down){
+    camera.position.z += 1 / 5;
+  }else if (snake.right){
+    camera.position.x += 1 / 5;
+  }else{
+    camera.position.x -= 1 / 5;
+  }
   if (counter % 5 == 0) {
     if (head.x == food.x && head.z == food.z) {
-
       scene.remove(food.foodsphere);
-      snake.move(true);
       createFood();
+      snake.move(true);
     } else {
       snake.move(false);
     }

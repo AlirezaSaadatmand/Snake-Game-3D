@@ -16,7 +16,7 @@ document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 
 // Camera
-const camera = new THREE.PerspectiveCamera(45, width / height, 0.01, 1000);
+const camera = new THREE.PerspectiveCamera(50, width / height, 0.01, 1000);
 camera.position.set(10, 50, 45);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -24,7 +24,7 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.03;
 
 const groundMesh = new THREE.Mesh(
-  new THREE.BoxGeometry(50, 1, 50),
+  new THREE.BoxGeometry(52, 1, 52),
   new THREE.MeshStandardMaterial({ color: 0xffffff })
 );
 groundMesh.receiveShadow = true;
@@ -32,12 +32,12 @@ groundMesh.position.y = -1.5;
 scene.add(groundMesh);
 
 // Light
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(0, 5, 0);
+const light = new THREE.PointLight(0xffffff, 1.5, 1000, 0);
+light.position.set(0, 50, 0);
 light.castShadow = true;
 scene.add(light);
 
-const light2 = new THREE.HemisphereLight(0xffff00, 0xffff00, 1);
+const light2 = new THREE.HemisphereLight(0xffff00, 1);
 scene.add(light2);
 
 class Sphere extends THREE.Mesh {
@@ -111,45 +111,43 @@ class Snake {
       );
     }
     this.parts.push(sphere);
-    sphere.castShadow = true;
+    this.parts.forEach((part) => {
+      part.castShadow = true;
+      scene.add(part);
+    });
+
     scene.add(sphere);
   }
 }
 
 const snake = new Snake();
 
-snake.parts.forEach((part) => {
-  part.castShadow = true;
-  scene.add(part);
-});
-
-function createStars(){
-    for(let i = 0; i < 2000; i++){
-
-        let x = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
-        if (Math.random() > 0.5){
-            x *= -1
-        }
-        let y = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
-        if (Math.random() > 0.5){
-            y *= -1
-        }
-        let z = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
-        if (Math.random() > 0.5){
-            z *= -1
-        }
-        if (x > 1000 || y > 1000 || z > 1000){
-            return
-        }
-        let starMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(Math.floor(Math.random()*2), 32, 32),
-            new THREE.MeshStandardMaterial({color:0xffffff})
-        )
-        starMesh.position.set(x,y,z);
-        scene.add(starMesh);
+function createStars() {
+  for (let i = 0; i < 2000; i++) {
+    let x = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+    if (Math.random() > 0.5) {
+      x *= -1;
     }
+    let y = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+    if (Math.random() > 0.5) {
+      y *= -1;
+    }
+    let z = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+    if (Math.random() > 0.5) {
+      z *= -1;
+    }
+    if (x > 1000 || y > 1000 || z > 1000) {
+      return;
+    }
+    let starMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(Math.floor(Math.random() * 2), 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
+    );
+    starMesh.position.set(x, y, z);
+    scene.add(starMesh);
+  }
 }
-createStars()
+createStars();
 
 let counter = 0;
 
@@ -181,6 +179,7 @@ function createFood() {
   snake.parts.forEach((part) => {
     if (part.x == x && part.z == z) {
       createFood();
+      return false;
     }
   });
   var foodsphere = new Sphere({ x: x, y: 0, z: z }, 1, 0xff0000);
@@ -188,19 +187,20 @@ function createFood() {
   food.x = x;
   food.z = z;
   food.foodsphere = foodsphere;
+  food.castShadow = true;
 }
 createFood();
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   let head = snake.parts[snake.parts.length - 1];
-  if (snake.up){
+  if (snake.up) {
     camera.position.z -= 1 / 5;
-  }else if( snake.down){
+  } else if (snake.down) {
     camera.position.z += 1 / 5;
-  }else if (snake.right){
+  } else if (snake.right) {
     camera.position.x += 1 / 5;
-  }else{
+  } else {
     camera.position.x -= 1 / 5;
   }
   if (counter % 5 == 0) {

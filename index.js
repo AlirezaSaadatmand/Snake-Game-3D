@@ -38,7 +38,7 @@ light.position.set(0, 5, 0);
 light.castShadow = true;
 scene.add(light);
 
-const light2 = new THREE.HemisphereLight(0xffffff, 0x000000, 1);
+const light2 = new THREE.HemisphereLight(0xffff00, 0xffff00, 1);
 scene.add(light2);
 
 class Sphere extends THREE.Mesh {
@@ -126,19 +126,22 @@ snake.parts.forEach((part) => {
 
 function createStars(){
     for(let i = 0; i < 2000; i++){
-        let x = Math.floor((Math.random()-0.5) * 500) + 200;
-        if (x - 200 < 0){
-            x -= 400;
-        }
-        let y = Math.floor((Math.random()-0.5) * 500) + 200;
-        if (y - 200 < 0){
-            y -= 400;
-        }
-        let z = Math.floor((Math.random()-0.5) * 500) + 200;
-        if (z - 200 < 0){
-            z -= 400;
-        }
 
+        let x = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+        if (Math.random() > 0.5){
+            x *= -1
+        }
+        let y = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+        if (Math.random() > 0.5){
+            y *= -1
+        }
+        let z = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+        if (Math.random() > 0.5){
+            z *= -1
+        }
+        if (x > 1000 || y > 1000 || z > 1000){
+            return
+        }
         let starMesh = new THREE.Mesh(
             new THREE.SphereGeometry(Math.floor(Math.random()*2), 32, 32),
             new MeshStandardMaterial({color:0xffffff})

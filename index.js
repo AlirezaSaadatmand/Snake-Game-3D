@@ -20,23 +20,37 @@ document.body.appendChild(renderer.domElement);
 // Scene
 const scene = new THREE.Scene();
 
+// Score Text
 const loader = new FontLoader();
 
 loader.load("./assets/fonts/Exo 2_Regular.json", function (font) {
-  const geometry = new TextGeometry(`Score : ${score}`, {
+  const scoreGeo = new TextGeometry(`Score : `, {
     font: font,
     size: 8,
-    height: 1,
+    height: 2,
   });
   var textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  var text = new THREE.Mesh(geometry, textMaterial);
-  text.position.set(-10, 0, -35);
+  var text = new THREE.Mesh(scoreGeo, textMaterial);
+  text.position.set(-25, 0, -35);
   scene.add(text);
+
+  const nameGeo = new TextGeometry("Snake game", {
+    font: font,
+    size: 8,
+    height: 2,
+  });
+  let nameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  let name = new THREE.Mesh(nameGeo, nameMaterial);
+  name.position.set(-35, 0, 28);
+  name.rotateY((90 * Math.PI) / 180);
+  name.rotateX((-10 * Math.PI) / 180);
+  scene.add(name);
 });
 // Camera
 const camera = new THREE.PerspectiveCamera(50, width / height, 0.01, 1000);
 camera.position.set(10, 50, 45);
 
+// Controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.03;
@@ -218,6 +232,25 @@ function createFood() {
 }
 
 createFood();
+let text;
+
+function scoreFunc() {
+  let loader = new FontLoader();
+  loader.load("./assets/fonts/Exo 2_Regular.json", (font) => {
+    const geometry = new TextGeometry(`${score}`, {
+      font: font,
+      size: 8,
+      height: 2,
+    });
+    let textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    let textMesh = new THREE.Mesh(geometry, textMaterial);
+    textMesh.position.set(11, 0, -35);
+    scene.add(textMesh);
+    text = textMesh;
+  });
+}
+
+scoreFunc();
 let counter = 0;
 function animate() {
   requestAnimationFrame(animate);
@@ -235,7 +268,10 @@ function animate() {
   if (counter % 5 == 0) {
     step = true;
     if (head.position.x == food.x && head.position.z == food.z) {
-      score++;
+      score += 10;
+
+      scene.remove(text);
+      text = scoreFunc();
       scene.remove(food.foodsphere);
       createFood();
       snake.move(true);

@@ -24,7 +24,7 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.03;
 
 const groundMesh = new THREE.Mesh(
-  new THREE.BoxGeometry(52, 1, 52),
+  new THREE.BoxGeometry(54, 1, 54),
   new THREE.MeshStandardMaterial({ color: 0xffffff })
 );
 groundMesh.receiveShadow = true;
@@ -124,15 +124,15 @@ const snake = new Snake();
 
 function createStars() {
   for (let i = 0; i < 2000; i++) {
-    let x = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+    let x = Math.floor((Math.random() + 0.1) * (Math.random() + 0.2) * 500);
     if (Math.random() > 0.5) {
       x *= -1;
     }
-    let y = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+    let y = Math.floor((Math.random() + 0.1) * (Math.random() + 0.2) * 500);
     if (Math.random() > 0.5) {
       y *= -1;
     }
-    let z = Math.floor((Math.random() + 0.1) * (Math.random() + 0.1) * 750);
+    let z = Math.floor((Math.random() + 0.1) * (Math.random() + 0.2) * 500);
     if (Math.random() > 0.5) {
       z *= -1;
     }
@@ -141,15 +141,15 @@ function createStars() {
     }
     let starMesh = new THREE.Mesh(
       new THREE.SphereGeometry(Math.floor(Math.random() * 2), 32, 32),
-      new THREE.MeshStandardMaterial({ color: 0xffffff })
+      new THREE.MeshStandardMaterial({
+        color: `hsl(${Math.random() * 360}, 50%, 50%)`,
+      })
     );
     starMesh.position.set(x, y, z);
     scene.add(starMesh);
   }
 }
 createStars();
-
-let counter = 0;
 
 addEventListener("keydown", (event) => {
   if (event.key == "w" && !snake.down) {
@@ -174,22 +174,29 @@ addEventListener("keydown", (event) => {
 });
 
 function createFood() {
-  let x = Math.floor((Math.random() - 0.5) * 25) * 2;
-  let z = Math.floor((Math.random() - 0.5) * 25) * 2;
-  snake.parts.forEach((part) => {
-    if (part.x == x && part.z == z) {
+  let xIndex = Math.floor((Math.random() - 0.5) * 25) * 2;
+  let zIndex = Math.floor((Math.random() - 0.5) * 25) * 2;
+
+  for (let i = 0; i < snake.parts.length; i++) {
+    if (
+      snake.parts[i].position.x == xIndex &&
+      snake.parts[i].position.z == zIndex
+    ) {
       createFood();
       return false;
     }
-  });
-  var foodsphere = new Sphere({ x: x, y: 0, z: z }, 1, 0xff0000);
+  }
+
+  var foodsphere = new Sphere({ x: xIndex, y: 0, z: zIndex }, 1, 0xff0000);
   scene.add(foodsphere);
-  food.x = x;
-  food.z = z;
+  food.x = xIndex;
+  food.z = zIndex;
   food.foodsphere = foodsphere;
   food.castShadow = true;
 }
+
 createFood();
+let counter = 0;
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
@@ -204,7 +211,7 @@ function animate() {
     camera.position.x -= 1 / 5;
   }
   if (counter % 5 == 0) {
-    if (head.x == food.x && head.z == food.z) {
+    if (head.position.x == food.x && head.position.z == food.z) {
       scene.remove(food.foodsphere);
       createFood();
       snake.move(true);

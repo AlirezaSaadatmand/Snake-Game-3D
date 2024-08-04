@@ -6,6 +6,8 @@ const height = window.innerHeight;
 
 var food = { x: null, z: null, foodsphere: null };
 
+let step = true;
+
 // Renerer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
@@ -37,7 +39,7 @@ light.position.set(0, 50, 0);
 light.castShadow = true;
 scene.add(light);
 
-const light2 = new THREE.HemisphereLight(0xffff00, 1);
+const light2 = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);
 scene.add(light2);
 
 class Sphere extends THREE.Mesh {
@@ -142,7 +144,7 @@ function createStars() {
     let starMesh = new THREE.Mesh(
       new THREE.SphereGeometry(Math.floor(Math.random() * 2), 32, 32),
       new THREE.MeshStandardMaterial({
-        color: `hsl(${Math.random() * 360}, 50%, 50%)`,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
       })
     );
     starMesh.position.set(x, y, z);
@@ -152,24 +154,28 @@ function createStars() {
 createStars();
 
 addEventListener("keydown", (event) => {
-  if (event.key == "w" && !snake.down) {
+  if ((event.key == "w" || event.key == "W") && !snake.down && step) {
     snake.right = false;
     snake.left = false;
     snake.up = true;
-  } else if (event.key == "s" && !snake.up) {
+    step = false;
+  } else if ((event.key == "s" || event.key == "S") && !snake.up && step) {
     snake.right = false;
     snake.left = false;
     snake.down = true;
+    step = false;
   }
-  if (event.key == "a" && !snake.right) {
+  if ((event.key == "a" || event.key == "A") && !snake.right && step) {
     snake.up = false;
     snake.down = false;
     snake.left = true;
+    step = false;
   }
-  if (event.key == "d" && !snake.left) {
+  if ((event.key == "d" || event.key == "D") && !snake.left && step) {
     snake.up = false;
     snake.down = false;
     snake.right = true;
+    step = false;
   }
 });
 
@@ -211,6 +217,7 @@ function animate() {
     camera.position.x -= 1 / 5;
   }
   if (counter % 5 == 0) {
+    step = true;
     if (head.position.x == food.x && head.position.z == food.z) {
       scene.remove(food.foodsphere);
       createFood();

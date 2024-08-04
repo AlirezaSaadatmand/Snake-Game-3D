@@ -27,7 +27,7 @@ loader.load("./assets/fonts/Exo 2_Regular.json", function (font) {
   const scoreGeo = new TextGeometry(`Score : `, {
     font: font,
     size: 8,
-    height: 2,
+    height: 1.5,
   });
   var textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
   var text = new THREE.Mesh(scoreGeo, textMaterial);
@@ -37,13 +37,13 @@ loader.load("./assets/fonts/Exo 2_Regular.json", function (font) {
   const nameGeo = new TextGeometry("Snake game", {
     font: font,
     size: 8,
-    height: 2,
+    height: 1.5,
   });
   let nameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
   let name = new THREE.Mesh(nameGeo, nameMaterial);
   name.position.set(-35, 0, 28);
   name.rotateY((90 * Math.PI) / 180);
-  name.rotateX((-10 * Math.PI) / 180);
+  name.rotateX((-5 * Math.PI) / 180);
   scene.add(name);
 });
 // Camera
@@ -240,7 +240,7 @@ function scoreFunc() {
     const geometry = new TextGeometry(`${score}`, {
       font: font,
       size: 8,
-      height: 2,
+      height: 1.5,
     });
     let textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
     let textMesh = new THREE.Mesh(geometry, textMaterial);

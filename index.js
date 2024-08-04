@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -7,6 +9,7 @@ const height = window.innerHeight;
 var food = { x: null, z: null, foodsphere: null };
 
 let step = true;
+let score = 0;
 
 // Renerer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -17,6 +20,19 @@ document.body.appendChild(renderer.domElement);
 // Scene
 const scene = new THREE.Scene();
 
+const loader = new FontLoader();
+
+loader.load("./assets/fonts/Exo 2_Regular.json", function (font) {
+  const geometry = new TextGeometry(`Score : ${score}`, {
+    font: font,
+    size: 8,
+    height: 1,
+  });
+  var textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  var text = new THREE.Mesh(geometry, textMaterial);
+  text.position.set(-10, 0, -35);
+  scene.add(text);
+});
 // Camera
 const camera = new THREE.PerspectiveCamera(50, width / height, 0.01, 1000);
 camera.position.set(10, 50, 45);
@@ -219,6 +235,7 @@ function animate() {
   if (counter % 5 == 0) {
     step = true;
     if (head.position.x == food.x && head.position.z == food.z) {
+      score++;
       scene.remove(food.foodsphere);
       createFood();
       snake.move(true);

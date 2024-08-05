@@ -109,6 +109,8 @@ class Snake {
     this.left = false;
 
     this.unit = 2;
+    this.velocity = 1;
+    this.gravity = 0.5;
   }
 
   move(state) {
@@ -155,6 +157,25 @@ class Snake {
 
       scene.add(sphere);
     }
+  }
+  fall() {
+    this.velocity += this.gravity;
+    scene.remove(this.parts[0]);
+    this.parts.shift();
+    this.head = this.parts[this.parts.length - 1];
+
+    var sphere = new Sphere(
+      { x: this.head.x, y: this.head.y - this.velocity, z: this.head.z },
+      1
+    );
+
+    this.parts.push(sphere);
+    this.parts.forEach((part) => {
+      part.castShadow = true;
+      scene.add(part);
+    });
+
+    scene.add(sphere);
   }
 }
 
@@ -272,8 +293,10 @@ function animate() {
     } else {
       camera.position.x -= 1 / 5;
     }
+  } else {
+    if (counter % 5 == 0) snake.fall();
   }
-  if (counter % 5 == 0) {
+  if (counter % 5 == 0 && !gameOver) {
     step = true;
     if (head.position.x == food.x && head.position.z == food.z) {
       score += 10;

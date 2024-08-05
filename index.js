@@ -10,7 +10,12 @@ var food = { x: null, z: null, foodsphere: null };
 
 let step = true;
 let score = 0;
+
+// State of Falling
 let gameOver = false;
+
+// State of heating itself
+let heatGameOver = false;
 // Renerer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
@@ -163,7 +168,9 @@ class Snake {
     scene.remove(this.parts[0]);
     this.parts.shift();
     this.head = this.parts[this.parts.length - 1];
-
+    if (this.head.position.y < -200) {
+      return;
+    }
     var sphere = new Sphere(
       { x: this.head.x, y: this.head.y - this.velocity, z: this.head.z },
       1
@@ -210,32 +217,6 @@ function createStars() {
 }
 createStars();
 
-addEventListener("keydown", (event) => {
-  if ((event.key == "w" || event.key == "W") && !snake.down && step) {
-    snake.right = false;
-    snake.left = false;
-    snake.up = true;
-    step = false;
-  } else if ((event.key == "s" || event.key == "S") && !snake.up && step) {
-    snake.right = false;
-    snake.left = false;
-    snake.down = true;
-    step = false;
-  }
-  if ((event.key == "a" || event.key == "A") && !snake.right && step) {
-    snake.up = false;
-    snake.down = false;
-    snake.left = true;
-    step = false;
-  }
-  if ((event.key == "d" || event.key == "D") && !snake.left && step) {
-    snake.up = false;
-    snake.down = false;
-    snake.right = true;
-    step = false;
-  }
-});
-
 function createFood() {
   let xIndex = Math.floor((Math.random() - 0.5) * 25) * 2;
   let zIndex = Math.floor((Math.random() - 0.5) * 25) * 2;
@@ -276,14 +257,55 @@ function scoreFunc() {
     text = textMesh;
   });
 }
-
 scoreFunc();
+
+function checkEndGame() {
+  let head = snake.parts[snake.parts.length - 1];
+  snake.parts.forEach((part) => {
+    if (
+      head.position.x == part.position.x &&
+      head.position.z == part.position.z &&
+      part != head
+    ) {
+      heatGameOver = true;
+      return;
+    }
+  });
+}
+
+addEventListener("keydown", (event) => {
+  if ((event.key == "w" || event.key == "W") && !snake.down && step) {
+    snake.right = false;
+    snake.left = false;
+    snake.up = true;
+    step = false;
+  } else if ((event.key == "s" || event.key == "S") && !snake.up && step) {
+    snake.right = false;
+    snake.left = false;
+    snake.down = true;
+    step = false;
+  }
+  if ((event.key == "a" || event.key == "A") && !snake.right && step) {
+    snake.up = false;
+    snake.down = false;
+    snake.left = true;
+    step = false;
+  }
+  if ((event.key == "d" || event.key == "D") && !snake.left && step) {
+    snake.up = false;
+    snake.down = false;
+    snake.right = true;
+    step = false;
+  }
+});
+
 let counter = 0;
+
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   let head = snake.parts[snake.parts.length - 1];
-  if (!gameOver) {
+  if (!gameOver && !heatGameOver) {
     if (snake.up) {
       camera.position.z -= 1 / 5;
     } else if (snake.down) {
@@ -293,10 +315,10 @@ function animate() {
     } else {
       camera.position.x -= 1 / 5;
     }
-  } else {
+  } else if (gameOver) {
     if (counter % 5 == 0) snake.fall();
   }
-  if (counter % 5 == 0 && !gameOver) {
+  if (counter % 5 == 0 && !gameOver && !heatGameOver) {
     step = true;
     if (head.position.x == food.x && head.position.z == food.z) {
       score += 10;
@@ -308,6 +330,7 @@ function animate() {
       snake.move(true);
     } else {
       snake.move(false);
+      checkEndGame();
     }
   }
   counter++;

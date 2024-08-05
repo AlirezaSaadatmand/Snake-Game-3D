@@ -6,10 +6,16 @@ import { FontLoader } from "three/addons/loaders/FontLoader.js";
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-var food = { x: null, z: null, foodsphere: null };
+var food = { x: null, z: null, foodsphere: null, foodType: null };
 
+// Snake movement
 let step = true;
+
+// Score
 let score = 0;
+
+// Camera state
+let cameraState = 1;
 
 // State of Falling
 let gameOver = false;
@@ -164,13 +170,16 @@ class Snake {
     }
   }
   fall() {
+    this.head = this.parts[this.parts.length - 1];
+    if (this.parts[0].position.y < -200) {
+      this.parts.forEach((part) => {
+        scene.remove(part);
+      });
+      return;
+    }
     this.velocity += this.gravity;
     scene.remove(this.parts[0]);
     this.parts.shift();
-    this.head = this.parts[this.parts.length - 1];
-    if (this.head.position.y < -200) {
-      return;
-    }
     var sphere = new Sphere(
       { x: this.head.x, y: this.head.y - this.velocity, z: this.head.z },
       1
@@ -230,13 +239,23 @@ function createFood() {
       return false;
     }
   }
-
-  var foodsphere = new Sphere({ x: xIndex, y: 0, z: zIndex }, 1, 0xff0000);
-  scene.add(foodsphere);
-  food.x = xIndex;
-  food.z = zIndex;
-  food.foodsphere = foodsphere;
-  food.castShadow = true;
+  if (Math.random() > 1 || cameraState != 1) {
+    var foodsphere = new Sphere({ x: xIndex, y: 0, z: zIndex }, 1, 0xff0000);
+    scene.add(foodsphere);
+    food.x = xIndex;
+    food.z = zIndex;
+    food.foodsphere = foodsphere;
+    food.castShadow = true;
+    food.foodType = 1;
+  } else {
+    var foodsphere = new Sphere({ x: xIndex, y: 0, z: zIndex }, 1, 0x0000ff);
+    scene.add(foodsphere);
+    food.x = xIndex;
+    food.z = zIndex;
+    food.foodsphere = foodsphere;
+    food.castShadow = true;
+    food.foodType = 2;
+  }
 }
 
 createFood();
@@ -273,6 +292,28 @@ function checkEndGame() {
   });
 }
 
+function changeCameraAngle(state) {
+  var xStep = 20 / 100;
+  var yStep = 100 / 100;
+  var zStep = 90 / 100;
+  let counter = 0;
+  let change = setInterval(() => {
+    if (state == "goBack") {
+      console.log("hello");
+      camera.position.x += xStep;
+      camera.position.y += yStep;
+      camera.position.z += zStep;
+    } else if (state == "goForward") {
+      camera.position.x -= xStep;
+      camera.position.y -= yStep;
+      camera.position.z -= zStep;
+    }
+    if (counter == 500) {
+      clearInterval(change);
+    }
+    counter += 5;
+  }, 5);
+}
 addEventListener("keydown", (event) => {
   if ((event.key == "w" || event.key == "W") && !snake.down && step) {
     snake.right = false;
@@ -300,11 +341,11 @@ addEventListener("keydown", (event) => {
 });
 
 let counter = 0;
+let foodEatenCountInState2 = 0;
 
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
-  let head = snake.parts[snake.parts.length - 1];
   if (!gameOver && !heatGameOver) {
     if (snake.up) {
       camera.position.z -= 1 / 5;
@@ -316,18 +357,35 @@ function animate() {
       camera.position.x -= 1 / 5;
     }
   } else if (gameOver) {
-    if (counter % 5 == 0) snake.fall();
+    if (counter % 5 == 0 && snake.parts.length > 0) snake.fall();
   }
   if (counter % 5 == 0 && !gameOver && !heatGameOver) {
     step = true;
-    if (head.position.x == food.x && head.position.z == food.z) {
-      score += 10;
+    let head = snake.parts[snake.parts.length - 1];
 
+    if (head.position.x == food.x && head.position.z == food.z) {
+      if (food.foodType == 1) {
+        score += 10;
+        if (cameraState == 2) {
+          foodEatenCountInState2++;
+          score += 40;
+        }
+        if (foodEatenCountInState2 == 5) {
+          changeCameraAngle("goForward");
+          cameraState = 1;
+          foodEatenCountInState2 = 0;
+        }
+      } else if (food.foodType == 2) {
+        cameraState = 2;
+        changeCameraAngle("goBack");
+        score += 100;
+      }
       scene.remove(text);
       text = scoreFunc();
       scene.remove(food.foodsphere);
       createFood();
       snake.move(true);
+      checkEndGame();
     } else {
       snake.move(false);
       checkEndGame();

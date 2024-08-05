@@ -10,7 +10,7 @@ var food = { x: null, z: null, foodsphere: null };
 
 let step = true;
 let score = 0;
-
+let gameOver = false;
 // Renerer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
@@ -116,39 +116,45 @@ class Snake {
       scene.remove(this.parts[0]);
       this.parts.shift();
     }
+    if (!gameOver) {
+      this.head = this.parts[this.parts.length - 1];
+      if (this.up) {
+        if (this.head.position.z - this.unit < -27) gameOver = true;
+        var sphere = new Sphere(
+          { x: this.head.x, y: this.head.y, z: this.head.z - this.unit },
+          1
+        );
+      }
+      if (this.down) {
+        if (this.head.position.z + this.unit > 27) gameOver = true;
+        var sphere = new Sphere(
+          { x: this.head.x, y: this.head.y, z: this.head.z + this.unit },
+          1
+        );
+      }
+      if (this.right) {
+        if (this.head.position.x + this.unit > 27) gameOver = true;
 
-    this.head = this.parts[this.parts.length - 1];
-    if (this.up) {
-      var sphere = new Sphere(
-        { x: this.head.x, y: this.head.y, z: this.head.z - this.unit },
-        1
-      );
-    }
-    if (this.down) {
-      var sphere = new Sphere(
-        { x: this.head.x, y: this.head.y, z: this.head.z + this.unit },
-        1
-      );
-    }
-    if (this.right) {
-      var sphere = new Sphere(
-        { x: this.head.x + this.unit, y: this.head.y, z: this.head.z },
-        1
-      );
-    }
-    if (this.left) {
-      var sphere = new Sphere(
-        { x: this.head.x - this.unit, y: this.head.y, z: this.head.z },
-        1
-      );
-    }
-    this.parts.push(sphere);
-    this.parts.forEach((part) => {
-      part.castShadow = true;
-      scene.add(part);
-    });
+        var sphere = new Sphere(
+          { x: this.head.x + this.unit, y: this.head.y, z: this.head.z },
+          1
+        );
+      }
+      if (this.left) {
+        if (this.head.position.x - this.unit < -27) gameOver = true;
+        var sphere = new Sphere(
+          { x: this.head.x - this.unit, y: this.head.y, z: this.head.z },
+          1
+        );
+      }
+      this.parts.push(sphere);
+      this.parts.forEach((part) => {
+        part.castShadow = true;
+        scene.add(part);
+      });
 
-    scene.add(sphere);
+      scene.add(sphere);
+    }
   }
 }
 
@@ -256,14 +262,16 @@ function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   let head = snake.parts[snake.parts.length - 1];
-  if (snake.up) {
-    camera.position.z -= 1 / 5;
-  } else if (snake.down) {
-    camera.position.z += 1 / 5;
-  } else if (snake.right) {
-    camera.position.x += 1 / 5;
-  } else {
-    camera.position.x -= 1 / 5;
+  if (!gameOver) {
+    if (snake.up) {
+      camera.position.z -= 1 / 5;
+    } else if (snake.down) {
+      camera.position.z += 1 / 5;
+    } else if (snake.right) {
+      camera.position.x += 1 / 5;
+    } else {
+      camera.position.x -= 1 / 5;
+    }
   }
   if (counter % 5 == 0) {
     step = true;

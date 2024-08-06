@@ -25,6 +25,7 @@ up : w or W
 down : s or S
 right : d or D
 left : a or A
+```
 
 ## Pictures
 
@@ -33,4 +34,7 @@ left : a or A
 And
 
 ![Screenshot 2024-08-06 130810](https://github.com/user-attachments/assets/2a774c77-c927-45fc-ab25-3965807dd2d8)
+
+```
+
 ```

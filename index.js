@@ -29,7 +29,7 @@ renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 // Scene
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
 
 // Score Text
 const loader = new FontLoader();
@@ -96,7 +96,6 @@ class Sphere extends THREE.Mesh {
     this.z = z;
 
     this.position.set(x, y, z);
-    this.pos = this.position;
 
     this.top = this.position.y + this.radius;
     this.bottom = this.position.y - this.radius;
@@ -239,7 +238,7 @@ function createFood() {
       return false;
     }
   }
-  if (Math.random() > 1 || cameraState != 1) {
+  if (Math.random() > 0.1 || cameraState != 1) {
     var foodsphere = new Sphere({ x: xIndex, y: 0, z: zIndex }, 1, 0xff0000);
     scene.add(foodsphere);
     food.x = xIndex;

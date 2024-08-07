@@ -21,10 +21,13 @@ To run and test the project , make sure you are connected to internet and run th
 ## Controlers
 
 ```
-    up : w or W
-    down : s or S
-    right : d or D
-    left : a or A
+    moving up : w or W
+
+    moving down : s or S
+
+    moving right : d or D
+
+    moving left : a or A
 ```
 
 ## Pictures

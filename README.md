@@ -33,7 +33,3 @@ To run and test the project , make sure you are connected to internet and run th
 ## Pictures
 
 ![Screenshot 2024-08-06 130206](https://github.com/user-attachments/assets/ac4662d0-474e-459b-9d6f-2c2b150a2de2)
-
-And
-
-![Screenshot 2024-08-06 130810](https://github.com/user-attachments/assets/2a774c77-c927-45fc-ab25-3965807dd2d8)

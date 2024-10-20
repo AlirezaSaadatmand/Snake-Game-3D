@@ -259,6 +259,13 @@ function checkEndGame() {
     });
 }
 
+function rotateCamera() {
+    camera.position.x = Math.sin(Date.now() * 0.001) * 10;
+    camera.rotateZ(0.001);
+    camera.rotateX(0.001);
+    camera.position.z = Math.cos(Date.now() * 0.001) * 10;
+}
+
 function changeCameraAngle(state) {
     var xStep = 20 / 100;
     var yStep = 100 / 100;
@@ -266,7 +273,6 @@ function changeCameraAngle(state) {
     let counter = 0;
     let change = setInterval(() => {
         if (state == "goBack") {
-            console.log("hello");
             camera.position.x += xStep;
             camera.position.y += yStep;
             camera.position.z += zStep;
@@ -324,7 +330,15 @@ function animate() {
             camera.position.x -= 1 / 5;
         }
     } else if (gameOver) {
-        if (counter % 5 == 0 && snake.parts.length > 0) snake.fall();
+        if (counter % 5 == 0 && snake.parts.length > 0) {
+            snake.fall();
+        } else {
+            if (cameraState == 1) {
+                changeCameraAngle("goBack");
+                cameraState = 2;
+            }
+            rotateCamera();
+        }
     }
     if (counter % 5 == 0 && !gameOver && !heatGameOver) {
         step = true;

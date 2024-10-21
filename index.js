@@ -334,8 +334,8 @@ function animate() {
             snake.fall();
         } else {
             if (cameraState == 1) {
-                changeCameraAngle("goBack");
-                cameraState = 2;
+                // changeCameraAngle("goBack");
+                // cameraState = 2;
             }
             rotateCamera();
         }

@@ -259,12 +259,12 @@ function checkEndGame() {
     });
 }
 
-function rotateCamera() {
-    camera.position.x = Math.sin(Date.now() * 0.001) * 10;
-    camera.rotateZ(0.001);
-    camera.rotateX(0.001);
-    camera.position.z = Math.cos(Date.now() * 0.001) * 10;
-}
+// function rotateCamera() {
+//     camera.position.x = Math.sin(Date.now() * 0.001) * 10;
+//     camera.rotateZ(0.001);
+//     camera.rotateX(0.001);
+//     camera.position.z = Math.cos(Date.now() * 0.001) * 10;
+// }
 
 function changeCameraAngle(state) {
     var xStep = 20 / 100;
@@ -337,8 +337,8 @@ function animate() {
                 // changeCameraAngle("goBack");
                 // cameraState = 2;
             }
-            rotateCamera();
-        }
+            // rotateCamera();
+        } 
     }
     if (counter % 5 == 0 && !gameOver && !heatGameOver) {
         step = true;
